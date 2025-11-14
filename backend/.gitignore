@@ -1,0 +1,28 @@
+# Dependencies
+/node_modules
+/npm-debug.log
+/yarn-error.log
+/package-lock.json
+/yarn.lock
+
+# Build/Dist artifacts
+/dist
+/build
+/out
+/coverage
+
+# Environment Variables & Configuration
+# NEVER commit sensitive data or configuration
+.env
+.env.*
+.env.local
+
+# Logs
+logs
+*.log
+
+# Editor/OS Specific Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
