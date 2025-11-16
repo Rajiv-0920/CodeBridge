@@ -1,6 +1,7 @@
 import express from 'express'
 import 'dotenv/config'
 import path from 'path'
+import { connectDB } from './lib/db.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -19,6 +20,15 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-app.listen(PORT, () => {
-  console.log(`Server is running on the port: ${PORT}`)
-})
+const startServer = async () => {
+  try {
+    await connectDB()
+    app.listen(PORT, () => {
+      console.log(`Server is running on the port: ${PORT}`)
+    })
+  } catch (error) {
+    console.log(`Error starting the server: ${error}`)
+  }
+}
+
+startServer()
