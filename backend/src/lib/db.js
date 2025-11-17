@@ -1,8 +1,5 @@
-// lib/db.js
 import mongoose from 'mongoose'
 
-// Optional: Caching the connection object in the global scope to prevent
-// hot-reloading issues in development, though not strictly required for production.
 const connection = {}
 
 export const connectDB = async () => {

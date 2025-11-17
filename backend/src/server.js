@@ -8,13 +8,12 @@ import { functions, inngest } from './lib/inngest.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
+const __dirname = path.resolve()
 
 app.use(express.json())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
 
 app.use('/api/inngest', serve({ client: inngest, functions }))
-
-const __dirname = path.resolve()
 
 app.get('/health', (req, res) => {
   res.status(200).json({ message: 'Hello, from health' })
