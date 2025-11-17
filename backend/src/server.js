@@ -2,7 +2,7 @@ import express from 'express'
 import 'dotenv/config'
 import path from 'path'
 import cors from 'cors'
-import serve from 'inngest/express'
+import { serve } from 'inngest/express'
 import { connectDB } from './lib/db.js'
 import { functions, inngest } from './lib/inngest.js'
 
