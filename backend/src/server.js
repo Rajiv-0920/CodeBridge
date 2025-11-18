@@ -16,14 +16,14 @@ const __dirname = path.resolve()
 app.use(express.json())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
 
-/*
- * `clerkMiddleware()` Checks if the user is signed in (using cookies/headers) and makes their info available
- * as 'request.auth' for your code to use.
+/**
+ * `clerkMiddleware()` checks request cookies/headers for a Clerk session
+ * and attaches auth info to `req.auth`.
  */
 app.use(clerkMiddleware())
 
 app.use('/api/inngest', serve({ client: inngest, functions }))
-app.use('api/chat', chatRoutes)
+app.use('/api/chat', chatRoutes)
 
 app.get('/health', (req, res) => {
   res.status(200).json({ message: 'Hello, from health' })
