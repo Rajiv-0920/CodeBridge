@@ -1,4 +1,4 @@
-import { chatClient, streamClient } from '../lib/stream.js'
+import { chatClient, isStreamEnabled, streamClient } from '../lib/stream.js'
 import Session from '../models/Session.js'
 
 export const createSession = async (req, res) => {
@@ -26,6 +26,14 @@ export const createSession = async (req, res) => {
       callId,
     })
 
+    if (!isStreamEnabled()) {
+      console.warn('Attempted to create session, but Stream is disabled.')
+      return res.status(503).json({
+        error: 'Service Unavailable',
+        message: 'Video/Chat services are not configured.',
+      })
+    }
+
     // Create stream video call
     await streamClient.video.call('default', callId).getOrCreate({
       data: {
@@ -46,7 +54,7 @@ export const createSession = async (req, res) => {
     res.status(201).json({ session })
   } catch (error) {
     console.log(`Error in createSession Controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 export const getActiveSessions = async (req, res) => {
@@ -58,7 +66,7 @@ export const getActiveSessions = async (req, res) => {
     res.status(200).json({ sessions })
   } catch (error) {
     console.log(`Error in getActiveSessions controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 export const getMyRecentSessions = async (req, res) => {
@@ -75,7 +83,7 @@ export const getMyRecentSessions = async (req, res) => {
     return res.status(200).json({ sessions })
   } catch (error) {
     console.log(`Error in getMyRecentSessions controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 export const getSessionById = async (req, res) => {
@@ -90,10 +98,17 @@ export const getSessionById = async (req, res) => {
     res.status(200).json({ session })
   } catch (error) {
     console.log(`Error in getSessionById controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 export const joinSession = async (req, res) => {
+  if (!isStreamEnabled()) {
+    return res.status(503).json({
+      error: 'Chat Unavailable',
+      message: 'Cannot join session; chat services are offline.',
+    })
+  }
+
   try {
     const { id } = req.params
     const userId = req.user._id
@@ -102,9 +117,13 @@ export const joinSession = async (req, res) => {
     const session = await Session.findById(id)
     if (!session) return res.status(404).json({ message: 'Session not found' })
 
+    if (session.status !== 'active') {
+      return res.status(400).json({ message: 'Session is not active' })
+    }
+
     // Check if session is already full - has a participant
     if (session.participant)
-      return res.status(404).json({ message: 'Session is full' })
+      return res.status(409).json({ message: 'Session is full' })
 
     session.participant = userId
     await session.save()
@@ -115,10 +134,17 @@ export const joinSession = async (req, res) => {
     res.status(200).json({ session })
   } catch (error) {
     console.log(`Error in joinSession controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
 export const endSession = async (req, res) => {
+  if (!isStreamEnabled()) {
+    // If stream isn't enabled, we might just return success
+    // since there is no stream to end.
+    return res
+      .status(200)
+      .json({ session, message: 'Session ended (Stream disabled)' })
+  }
   try {
     const { id } = req.params
     const userId = req.user._id
@@ -146,10 +172,9 @@ export const endSession = async (req, res) => {
     // Delete stream chat channel
     const channel = chatClient.channel('messaging', session.callId)
     await channel.delete()
-
     res.status(200).json({ session, message: 'Session ended successfully' })
   } catch (error) {
     console.log(`Error in endSession controller ${error.message}`)
-    res.status(500).json({ message: 'Internal Sever Error' })
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }

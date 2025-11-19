@@ -19,8 +19,11 @@ if (!apiKey || !apiSecret) {
   console.log('Stream Client & Chat Client initialized.')
 }
 
-// All subsequent functions must check if chatClient is initialized
+export const isStreamEnabled = () => {
+  return streamClient !== null && chatClient !== null
+}
 
+// All subsequent functions must check if chatClient is initialized
 export const upsertStreamUser = async (userData) => {
   if (!chatClient) {
     console.error(
