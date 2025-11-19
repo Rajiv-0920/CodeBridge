@@ -162,9 +162,6 @@ export const endSession = async (req, res) => {
     if (session.status === 'completed')
       return res.status(400).json({ message: 'Session is already completed' })
 
-    session.status = 'completed'
-    await session.save()
-
     // Delete stream video call
     const call = streamClient.video.call('default', session.callId)
     await call.delete({ hard: true })
@@ -172,6 +169,10 @@ export const endSession = async (req, res) => {
     // Delete stream chat channel
     const channel = chatClient.channel('messaging', session.callId)
     await channel.delete()
+
+    session.status = 'completed'
+    await session.save()
+
     res.status(200).json({ session, message: 'Session ended successfully' })
   } catch (error) {
     console.log(`Error in endSession controller ${error.message}`)
