@@ -8,6 +8,7 @@ import { clerkMiddleware } from '@clerk/express'
 import { connectDB } from './lib/db.js'
 import { functions, inngest } from './lib/inngest.js'
 import chatRoutes from './routes/chatRoutes.js'
+import sessionRoutes from './routes/sessionRoutes.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -24,6 +25,7 @@ app.use(clerkMiddleware())
 
 app.use('/api/inngest', serve({ client: inngest, functions }))
 app.use('/api/chat', chatRoutes)
+app.use('/api/sessions', sessionRoutes)
 
 app.get('/health', (req, res) => {
   res.status(200).json({ message: 'Hello, from health' })

@@ -1,9 +1,11 @@
 import { StreamChat } from 'stream-chat'
+import { StreamClient } from '@stream-io/node-sdk'
 
 const apiKey = process.env.STREAM_API_KEY
 const apiSecret = process.env.STREAM_API_SECRET
 
 export let chatClient = null // Initialize as null
+export let streamClient = null // Initialize as null
 
 if (!apiKey || !apiSecret) {
   // If keys are missing, log the error and leave chatClient as null
@@ -12,8 +14,9 @@ if (!apiKey || !apiSecret) {
   )
 } else {
   // Only initialize the client if the keys are available
+  streamClient = new StreamClient(apiKey, apiSecret)
   chatClient = StreamChat.getInstance(apiKey, apiSecret)
-  console.log('Stream Chat Client initialized.')
+  console.log('Stream Client & Chat Client initialized.')
 }
 
 // All subsequent functions must check if chatClient is initialized
