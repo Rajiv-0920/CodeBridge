@@ -13,7 +13,7 @@ const HomePage = () => {
   return (
     <div>
       <Link to={'/problems'}>Go to Problems</Link>
-      <button onClick={() => toast.success('Toast')}>Render Toast</button>;
+      <button onClick={() => toast.success('Toast')}>Render Toast</button>
       <SignedOut>
         <SignInButton />
         <SignUpButton />

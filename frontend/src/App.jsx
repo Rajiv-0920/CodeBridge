@@ -6,14 +6,13 @@ import HomePage from './pages/HomePage'
 
 function App() {
   const { isSignedIn } = useUser()
-  console.log(isSignedIn)
   return (
     <div>
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route
           path='/problems'
-          element={isSignedIn ? <ProblemsPage /> : <Navigate to='/' />}
+          element={isSignedIn ? <ProblemsPage /> : <Navigate to='/' replace />}
         />
       </Routes>
       <Toaster theme='dark' />
