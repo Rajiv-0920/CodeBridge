@@ -17,6 +17,7 @@ import {
   LayoutDashboardIcon, // Added for the authenticated view
 } from 'lucide-react'
 import { SignInButton, useUser } from '@clerk/clerk-react'
+import Navbar from '../components/Navbar'
 
 const images = [
   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YXZhdGFyfGVufDB8fDB8fHww',
@@ -26,77 +27,14 @@ const images = [
 ]
 
 function HomePage() {
-  const [theme, setTheme] = useState('dark')
   const { isSignedIn, isLoaded } = useUser() // 1. Get auth state
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
 
   if (!isLoaded) return null
 
   return (
     <div className='min-h-screen bg-base-200 transition-colors duration-300'>
       {/* FLOATING NAVBAR */}
-      <nav className='fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl'>
-        <div className='bg-base-100/70 backdrop-blur-xl rounded-2xl border border-base-300 shadow-2xl'>
-          <div className='px-6 py-4 flex items-center justify-between'>
-            {/* LOGO */}
-            <Link to={'/'} className='flex items-center gap-3 group'>
-              <div className='relative'>
-                <div className='absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-xl blur-md opacity-50 group-hover:opacity-75 transition-opacity'></div>
-                <div className='relative size-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center'>
-                  <SparklesIcon className='size-6 text-white' />
-                </div>
-              </div>
-
-              <div className='flex flex-col'>
-                <span className='font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
-                  CodeBridge
-                </span>
-                <span className='text-xs text-base-content/60 -mt-0.5'>
-                  Code. Connect. Conquer.
-                </span>
-              </div>
-            </Link>
-
-            {/* NAV ACTIONS */}
-            <div className='flex items-center gap-3'>
-              {/* THEME TOGGLE */}
-              <button
-                onClick={toggleTheme}
-                className='btn btn-ghost btn-circle btn-sm'
-                aria-label='Toggle theme'
-              >
-                {theme === 'dark' ? (
-                  <SunIcon className='size-5' />
-                ) : (
-                  <MoonIcon className='size-5' />
-                )}
-              </button>
-
-              {/* 2. CONDITIONAL NAVBAR BUTTON */}
-              {!isSignedIn ? (
-                <SignInButton mode='modal'>
-                  <button className='btn btn-primary btn-sm gap-2'>
-                    Get Started
-                    <ArrowRightIcon className='size-4' />
-                  </button>
-                </SignInButton>
-              ) : (
-                <Link to='/dashboard' className='btn btn-primary btn-sm gap-2'>
-                  Dashboard
-                  <LayoutDashboardIcon className='size-4' />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* HERO SECTION */}
       <div className='pt-32 pb-20 px-4'>
