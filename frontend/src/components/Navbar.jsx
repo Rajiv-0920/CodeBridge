@@ -7,8 +7,9 @@ import {
   Palette,
 } from 'lucide-react'
 import { SignInButton, UserButton, useUser } from '@clerk/clerk-react'
-import { useTheme } from '../hooks/useTheme'
+// import { useTheme } from '../hooks/useTheme'
 import { THEMES } from '../data/themes'
+import { useTheme } from '../context/themeContext'
 
 const Logo = () => {
   return (
@@ -33,7 +34,9 @@ const Logo = () => {
 
 const Navbar = () => {
   const { isSignedIn } = useUser()
+  // const { theme, setTheme } = useTheme()
   const { theme, setTheme } = useTheme()
+  console.log(theme)
 
   return (
     <nav className='fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl'>
