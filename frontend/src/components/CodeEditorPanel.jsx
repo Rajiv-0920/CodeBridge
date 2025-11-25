@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import Editor from '@monaco-editor/react'
 import { Loader2Icon, PlayIcon, TypeIcon } from 'lucide-react'
 
 import { LANGUAGE_CONFIG } from '../data/problems'
-import { useTheme } from '../hooks/useTheme'
 import {
   atomOneLightTheme,
   ayuLightTheme,
