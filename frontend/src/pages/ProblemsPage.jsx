@@ -11,20 +11,7 @@ import {
 import { PROBLEMS } from '../data/problems'
 import Navbar from '../components/Navbar'
 import { useDailyGoal } from '../hooks/useDailyGoal'
-
-// --- Helper Function for Dynamic Styling ---
-const getDifficultyColor = (difficulty) => {
-  switch (difficulty) {
-    case 'Easy':
-      return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20'
-    case 'Medium':
-      return 'text-amber-500 bg-amber-500/10 border-amber-500/20'
-    case 'Hard':
-      return 'text-rose-500 bg-rose-500/10 border-rose-500/20'
-    default:
-      return 'text-base-content bg-base-content/10 border-base-content/20'
-  }
-}
+import { getDifficultyBadgeClass } from '../lib/utils'
 
 const ProblemsPage = () => {
   const {
@@ -134,7 +121,7 @@ const ProblemsPage = () => {
                     <div className='flex items-start gap-5'>
                       {/* Icon Box */}
                       <div
-                        className={`shrink-0 size-12 rounded-2xl flex items-center justify-center border ${getDifficultyColor(
+                        className={`shrink-0 size-12 rounded-2xl flex items-center justify-center border ${getDifficultyBadgeClass(
                           problem.difficulty
                         )} transition-colors duration-300`}
                       >
@@ -148,7 +135,7 @@ const ProblemsPage = () => {
                             {problem.title}
                           </h3>
                           <span
-                            className={`badge badge-sm font-medium border-0 ${getDifficultyColor(
+                            className={`badge badge-sm font-medium border-0 ${getDifficultyBadgeClass(
                               problem.difficulty
                             )}`}
                           >

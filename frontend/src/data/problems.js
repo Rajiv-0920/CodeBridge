@@ -988,7 +988,7 @@ print(lengthOfLongestSubstring("pwwkew"))  # Expected: 3`,
 export const LANGUAGE_CONFIG = {
   javascript: {
     name: 'JavaScript',
-    icon: '/javascript.png',
+    icon: '/js.png',
     monacoLang: 'javascript',
   },
   python: {
