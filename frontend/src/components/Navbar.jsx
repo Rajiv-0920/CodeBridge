@@ -7,7 +7,6 @@ import {
   Palette,
 } from 'lucide-react'
 import { SignInButton, UserButton, useUser } from '@clerk/clerk-react'
-// import { useTheme } from '../hooks/useTheme'
 import { THEMES } from '../data/themes'
 import { useTheme } from '../context/themeContext'
 
