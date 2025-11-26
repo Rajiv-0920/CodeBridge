@@ -62,7 +62,7 @@ function RecentSessions({ sessions, isLoading }) {
                   </span>
                   <div className='flex items-center gap-1 text-xs text-base-content/60 bg-base-200 px-2 py-1 rounded-full'>
                     <Users className='w-3 h-3' />
-                    {session.participant ? '2' : '1'} Devs
+                    {session.participant ? '2 Devs' : '1 Dev'}
                   </div>
                 </div>
 

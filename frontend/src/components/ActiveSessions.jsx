@@ -10,7 +10,7 @@ import {
 import { Link } from 'react-router'
 import { getDifficultyBadgeClass } from '../lib/utils'
 
-const ActiveSessions = ({ sessions, isLoading, isUserInSession }) => {
+const ActiveSessions = ({ sessions = [], isLoading, isUserInSession }) => {
   return (
     <div className='lg:col-span-2 card bg-base-100 shadow-xl border border-base-200'>
       <div className='card-body p-6'>
@@ -31,7 +31,7 @@ const ActiveSessions = ({ sessions, isLoading, isUserInSession }) => {
           <div className='badge badge-neutral gap-2 py-3 px-4'>
             <div className='size-2 bg-success rounded-full animate-pulse' />
             <span className='font-mono font-bold'>
-              {sessions.length} Online
+              {sessions?.length ?? 0} Online
             </span>
           </div>
         </div>
