@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import ProblemsPage from './pages/ProblemsPage'
 import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
+import SessionPage from './pages/SessionPage'
 import ProblemPage from './pages/ProblemPage'
 
 function App() {
@@ -22,6 +23,10 @@ function App() {
         <Route
           path='/dashboard'
           element={isSignedIn ? <DashboardPage /> : <Navigate to='/' replace />}
+        />
+        <Route
+          path='/session/:id'
+          element={isSignedIn ? <SessionPage /> : <Navigate to='/' replace />}
         />
       </Routes>
       <Toaster theme='dark' />

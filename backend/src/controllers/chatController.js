@@ -9,7 +9,7 @@ export const getStreamToken = (req, res) => {
       token,
       userId: req.user.clerkId,
       userName: req.user.name,
-      userImage: req.user.image,
+      userImage: req.user.profileImage,
     })
   } catch (error) {
     console.error(
