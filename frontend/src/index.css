@@ -2,3 +2,50 @@
 @plugin "daisyui" {
   themes: all;
 }
+
+/* Add inside index.css */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(
+      to right,
+      rgba(128, 128, 128, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+}
+
+/* Custom Scrollbar for Dropdowns */
+.dropdown-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 10px;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+/* Custom overrides for Stream Chat to match DaisyUI/Tailwind dark theme */
+.str-chat__theme-dark {
+  --str-chat__primary-color: oklch(var(--p)); /* Your Primary Color */
+  --str-chat__active-primary-color: oklch(var(--pf));
+  --str-chat__background-color: oklch(var(--b1));
+  --str-chat__secondary-background-color: oklch(var(--b2));
+  --str-chat__message-textarea-background-color: oklch(var(--b2));
+  --str-chat__text-color: oklch(var(--bc));
+}
+
+/* Hide Stream's default branding if allowed */
+.str-video__participant-details {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+}

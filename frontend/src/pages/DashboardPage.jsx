@@ -13,10 +13,11 @@ import ActiveSessions from '../components/ActiveSessions'
 import RecentSessions from '../components/RecentSessions'
 import CreateSessionModal from '../components/CreateSessionModal'
 import WelcomeSection from '../components/WelcomeSection'
+import { Loader2 } from 'lucide-react'
 
 const DashboardPage = () => {
   const navigate = useNavigate()
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [roomConfig, setRoomConfig] = useState({ problem: '', difficulty: '' })
 
@@ -48,40 +49,57 @@ const DashboardPage = () => {
   const recentSessions = recentSessionsData?.sessions || []
 
   const isUserInSession = (session) => {
-    if (!user.id) return false
+    if (!user?.id) return false
     return (
       session.host?.clerkId === user.id ||
       session.participant?.clerkId === user.id
     )
   }
 
+  if (!isLoaded) {
+    return (
+      <div className='min-h-screen bg-base-100 flex items-center justify-center'>
+        <Loader2 className='size-10 animate-spin text-primary' />
+      </div>
+    )
+  }
+
   return (
-    <>
+    <div className='min-h-screen bg-base-100 relative selection:bg-primary/20 selection:text-primary'>
       {/* Background decoration */}
-      <div className='min-h-screen bg-base-300 relative selection:bg-primary selection:text-primary-content'>
-        {/* Subtle grid background */}
-        <div className='absolute inset-0 h-full w-full bg-base-300 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none' />
+      <div className='fixed inset-0 overflow-hidden pointer-events-none'>
+        <div className='absolute inset-0 bg-grid-pattern opacity-5' />
+        <div className='absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2' />
+      </div>
 
-        <Navbar />
+      <Navbar />
 
-        <div className='relative z-10 pt-10'>
-          <WelcomeSection onCreateSession={() => setShowCreateModal(true)} />
+      <div className='relative pt-28 pb-16 px-6 max-w-7xl mx-auto space-y-8'>
+        {/* WELCOME HEADER */}
+        <WelcomeSection
+          onCreateSession={() => setShowCreateModal(true)}
+          user={user}
+        />
 
-          <div className='container mx-auto px-6 pb-16 space-y-8'>
-            {/* Upper Grid */}
-            <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-              <StatsCards
-                activeSessionsCount={activeSessions.length}
-                recentSessionsCount={recentSessions.length}
-              />
-              <ActiveSessions
-                sessions={activeSessions}
-                isLoading={loadingActiveSessions}
-                isUserInSession={isUserInSession}
-              />
-            </div>
+        {/* STATS HUD */}
+        <StatsCards
+          activeSessionsCount={activeSessions.length}
+          recentSessionsCount={recentSessions.length}
+        />
 
-            {/* Lower Grid */}
+        {/* MAIN CONTENT GRID */}
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+          {/* Left: Active Lobbies (2/3 width) */}
+          <div className='lg:col-span-2 space-y-6'>
+            <ActiveSessions
+              sessions={activeSessions}
+              isLoading={loadingActiveSessions}
+              isUserInSession={isUserInSession}
+            />
+          </div>
+
+          {/* Right: History (1/3 width) */}
+          <div className='lg:col-span-1'>
             <RecentSessions
               sessions={recentSessions}
               isLoading={loadingRecentSessions}
@@ -98,7 +116,7 @@ const DashboardPage = () => {
         onCreateRoom={handleCreateRoom}
         isCreating={createSessionMutation.isPending}
       />
-    </>
+    </div>
   )
 }
 

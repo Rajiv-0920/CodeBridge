@@ -1,281 +1,164 @@
 import { Link } from 'react-router'
-import {
-  ChevronRight,
-  Code2,
-  Trophy,
-  Zap,
-  Brain,
-  Target,
-  CheckCircle2,
-} from 'lucide-react'
-import { PROBLEMS } from '../data/problems'
+import { ArrowRight, Brain, Code2, Terminal, Zap } from 'lucide-react'
+import { PROBLEMS } from '../data/problems' // Ensure this path matches your file structure
 import Navbar from '../components/Navbar'
-import { useDailyGoal } from '../hooks/useDailyGoal'
-import { getDifficultyBadgeClass } from '../lib/utils'
+import { getDifficultyBadgeClass } from '../lib/utils' // Ensure you have this utility or I can provide it
 
 const ProblemsPage = () => {
-  const {
-    solvedCount,
-    dailyTarget,
-    progressPercentage,
-    isGoalMet,
-    incrementSolved,
-  } = useDailyGoal()
-
+  // 1. Logic for stats (computed from PROBLEMS object)
   const problems = Object.values(PROBLEMS)
 
-  const easyProblemsCount = problems.filter(
-    (p) => p.difficulty === 'Easy'
-  ).length
-  const mediumProblemsCount = problems.filter(
-    (p) => p.difficulty === 'Medium'
-  ).length
-  const hardProblemsCount = problems.filter(
-    (p) => p.difficulty === 'Hard'
-  ).length
+  const stats = [
+    {
+      label: 'Total',
+      count: problems.length,
+      color: 'text-base-content',
+      bg: 'bg-base-content/5',
+      icon: Terminal,
+    },
+    {
+      label: 'Easy',
+      count: problems.filter((p) => p.difficulty === 'Easy').length,
+      color: 'text-emerald-500',
+      bg: 'bg-emerald-500/10',
+      icon: Zap,
+    },
+    {
+      label: 'Medium',
+      count: problems.filter((p) => p.difficulty === 'Medium').length,
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10',
+      icon: Brain,
+    },
+    {
+      label: 'Hard',
+      count: problems.filter((p) => p.difficulty === 'Hard').length,
+      color: 'text-rose-500',
+      bg: 'bg-rose-500/10',
+      icon: Code2,
+    },
+  ]
 
   return (
-    <div className='min-h-screen bg-base-200 selection:bg-primary/20 selection:text-primary pb-20'>
+    <div className='min-h-screen bg-base-100 relative selection:bg-primary/20 selection:text-primary pb-20'>
+      {/* BACKGROUND EFFECTS */}
+      <div className='fixed inset-0 overflow-hidden pointer-events-none'>
+        <div className='absolute inset-0 bg-grid-pattern opacity-10' />
+        <div className='absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3' />
+        <div className='absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 blur-[100px] rounded-full -translate-x-1/3 translate-y-1/3' />
+      </div>
+
       <Navbar />
 
-      {/* HEADER SECTION */}
-      <div className='pt-32 pb-10'>
-        <div className='max-w-6xl mx-auto px-6'>
-          {/* Title Area */}
-          <div className='flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12'>
-            <div>
-              <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4'>
-                <Zap className='size-3.5 text-primary fill-primary/20' />
-                <span className='text-xs font-bold text-primary tracking-wide uppercase'>
-                  Coding Arena
-                </span>
-              </div>
-              <h1 className='text-4xl md:text-5xl font-black tracking-tight text-base-content mb-3'>
-                Challenge Yourself
-              </h1>
-              <p className='text-lg text-base-content/60 max-w-lg leading-relaxed'>
-                Master algorithms and data structures with our curated
-                collection of coding challenges.
-              </p>
+      <div className='relative pt-32 pb-10 px-6 max-w-7xl mx-auto'>
+        {/* HERO HEADER */}
+        <div className='flex flex-col md:flex-row items-end justify-between gap-8 mb-16'>
+          <div className='space-y-4 max-w-2xl'>
+            <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20'>
+              <div className='size-2 rounded-full bg-primary animate-pulse' />
+              <span className='text-xs font-bold text-primary tracking-wide uppercase'>
+                Challenge Arena
+              </span>
             </div>
 
-            {/* Quick Stats Strip */}
-            <div className='flex gap-3 bg-base-100 p-2 rounded-2xl shadow-sm border border-base-300'>
-              <div className='px-4 py-2 text-center border-r border-base-200'>
-                <span className='block text-2xl font-bold text-base-content'>
-                  {problems.length}
-                </span>
-                <span className='text-xs font-medium text-base-content/50 uppercase tracking-wider'>
-                  Total
-                </span>
-              </div>
-              <div className='px-4 py-2 text-center border-r border-base-200'>
-                <span className='block text-2xl font-bold text-emerald-500'>
-                  {easyProblemsCount}
-                </span>
-                <span className='text-xs font-medium text-base-content/50 uppercase tracking-wider'>
-                  Easy
-                </span>
-              </div>
-              <div className='px-4 py-2 text-center border-r border-base-200'>
-                <span className='block text-2xl font-bold text-amber-500'>
-                  {mediumProblemsCount}
-                </span>
-                <span className='text-xs font-medium text-base-content/50 uppercase tracking-wider'>
-                  Med
-                </span>
-              </div>
-              <div className='px-4 py-2 text-center'>
-                <span className='block text-2xl font-bold text-rose-500'>
-                  {hardProblemsCount}
-                </span>
-                <span className='text-xs font-medium text-base-content/50 uppercase tracking-wider'>
-                  Hard
-                </span>
-              </div>
-            </div>
+            <h1 className='text-4xl md:text-6xl font-black tracking-tight text-base-content'>
+              Master the <br />
+              <span className='bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
+                Algorithms
+              </span>
+            </h1>
+
+            <p className='text-lg text-base-content/60 leading-relaxed'>
+              Sharpen your skills with our curated collection of coding
+              challenges. From easy warm-ups to mind-bending hard problems.
+            </p>
           </div>
 
-          {/* MAIN CONTENT GRID */}
-          <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-            {/* LEFT COLUMN: PROBLEMS LIST */}
-            <div className='lg:col-span-2 space-y-4'>
-              <div className='flex items-center justify-between pb-2'>
-                <h2 className='text-xl font-bold flex items-center gap-2 text-base-content'>
-                  <Target className='size-5 text-primary' />
-                  Latest Problems
-                </h2>
+          {/* STATS CARDS */}
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-4 w-full md:w-auto'>
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className='bg-base-100/50 backdrop-blur-md border border-base-content/5 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 shadow-sm hover:border-base-content/20 transition-all'
+              >
+                <div className={`p-2 rounded-lg ${stat.bg}`}>
+                  <stat.icon className={`size-5 ${stat.color}`} />
+                </div>
+                <div className='text-center'>
+                  <span className={`block text-xl font-bold ${stat.color}`}>
+                    {stat.count}
+                  </span>
+                  <span className='text-[10px] font-bold text-base-content/40 uppercase tracking-wider'>
+                    {stat.label}
+                  </span>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {problems.map((problem) => (
-                <Link
-                  key={problem.id}
-                  to={`/problem/${problem.id}`}
-                  className='group block relative'
-                >
-                  {/* Hover Glow Effect */}
-                  <div className='absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm' />
+        {/* PROBLEMS GRID */}
+        {/* We switched from a list to a Grid to fill the space left by the sidebar */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {problems.map((problem) => (
+            <Link
+              key={problem.id}
+              to={`/problem/${problem.id}`}
+              className='group relative flex flex-col h-full'
+            >
+              {/* Card Background & Border */}
+              <div className='absolute -inset-[1px] bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm' />
 
-                  {/* Card Content */}
-                  <div className='relative bg-base-100 rounded-3xl p-5 border border-base-200 hover:border-base-300 transition-all duration-300 shadow-sm hover:shadow-md'>
-                    <div className='flex items-start gap-5'>
-                      {/* Icon Box */}
-                      <div
-                        className={`shrink-0 size-12 rounded-2xl flex items-center justify-center border ${getDifficultyBadgeClass(
-                          problem.difficulty
-                        )} transition-colors duration-300`}
-                      >
-                        <Code2 className='size-6' />
-                      </div>
+              <div className='relative flex flex-col h-full bg-base-100 rounded-3xl border border-base-content/5 p-6 hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden'>
+                {/* Decoration Circle */}
+                <div className='absolute top-0 right-0 size-32 bg-primary/5 rounded-full blur-2xl translate-x-10 -translate-y-10 group-hover:bg-primary/10 transition-colors' />
 
-                      {/* Text Details */}
-                      <div className='flex-1 min-w-0'>
-                        <div className='flex items-center justify-between mb-1'>
-                          <h3 className='text-lg font-bold truncate pr-4 group-hover:text-primary transition-colors text-base-content'>
-                            {problem.title}
-                          </h3>
-                          <span
-                            className={`badge badge-sm font-medium border-0 ${getDifficultyBadgeClass(
-                              problem.difficulty
-                            )}`}
-                          >
-                            {problem.difficulty}
-                          </span>
-                        </div>
-
-                        <p className='text-xs font-bold text-base-content/40 uppercase tracking-wider mb-2'>
-                          {problem.category}
-                        </p>
-
-                        <p className='text-sm text-base-content/70 line-clamp-2'>
-                          {problem.description.text}
-                        </p>
-                      </div>
-
-                      {/* Action Arrow */}
-                      <div className='self-center hidden sm:block'>
-                        <div className='size-8 rounded-full bg-base-200 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-content transition-all duration-300'>
-                          <ChevronRight className='size-4' />
-                        </div>
-                      </div>
-                    </div>
+                {/* Header: Difficulty & Category */}
+                <div className='flex items-center justify-between mb-4'>
+                  <div
+                    className={`badge badge-md font-bold border-0 gap-1.5 ${getDifficultyBadgeClass(
+                      problem.difficulty
+                    )}`}
+                  >
+                    {/* Tiny dot for visual interest */}
+                    <div className='size-1.5 rounded-full bg-current opacity-50' />
+                    {problem.difficulty}
                   </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* RIGHT COLUMN: SIDEBAR */}
-            <div className='space-y-6'>
-              {/* --- DAILY GOAL CARD --- */}
-              <div className='bg-gradient-to-br from-primary/5 to-secondary/5 rounded-3xl p-6 border border-primary/10 relative overflow-hidden'>
-                {/* Confetti BG (Only shows when goal met) */}
-                {isGoalMet && (
-                  <div className='absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent pointer-events-none' />
-                )}
-
-                <div className='flex items-center justify-between mb-4 relative z-10'>
-                  <div className='flex items-center gap-3'>
-                    <div
-                      className={`p-2 rounded-lg transition-colors duration-300 ${
-                        isGoalMet
-                          ? 'bg-emerald-500/20 text-emerald-600'
-                          : 'bg-primary/10 text-primary'
-                      }`}
-                    >
-                      {isGoalMet ? (
-                        <CheckCircle2 className='size-5' />
-                      ) : (
-                        <Brain className='size-5' />
-                      )}
-                    </div>
-                    <h3 className='font-bold text-base-content'>Daily Goal</h3>
-                  </div>
-                  <span className='text-xs font-bold text-base-content/50 uppercase tracking-wider'>
-                    {solvedCount} / {dailyTarget}
+                  <span className='text-xs font-bold text-base-content/40 uppercase tracking-wider'>
+                    {problem.category.split('•')[0]}
                   </span>
                 </div>
 
-                <p className='text-sm text-base-content/70 mb-4 relative z-10 min-h-[40px]'>
-                  {isGoalMet ? (
-                    "You're on fire! 🔥 Come back tomorrow to keep the streak alive."
-                  ) : (
-                    <span>
-                      Solve{' '}
-                      <span className='font-bold text-primary'>
-                        {dailyTarget - solvedCount}
-                      </span>{' '}
-                      more problems to hit your daily target.
-                    </span>
-                  )}
+                {/* Title */}
+                <h3 className='text-xl font-bold text-base-content mb-3 group-hover:text-primary transition-colors line-clamp-1'>
+                  {problem.title}
+                </h3>
+
+                {/* Description Snippet */}
+                <p className='text-sm text-base-content/60 leading-relaxed mb-6 line-clamp-3 flex-grow'>
+                  {problem.description.text}
                 </p>
 
-                {/* Progress Bar */}
-                <div className='w-full bg-base-100 rounded-full h-3 mb-2 overflow-hidden border border-base-200/50 relative z-10'>
-                  <div
-                    className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                      isGoalMet ? 'bg-emerald-500' : 'bg-primary'
-                    }`}
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
-                </div>
-
-                <div className='flex justify-between text-xs text-base-content/50 relative z-10'>
-                  <span>Progress</span>
-                  <span>{Math.round(progressPercentage)}%</span>
-                </div>
-
-                {/* DEV BUTTON: Remove this in production! */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    incrementSolved()
-                  }}
-                  className='mt-4 btn btn-xs btn-ghost btn-block text-base-content/30 hover:text-primary font-normal'
-                >
-                  (Dev: Click to Simulate Solve)
-                </button>
-              </div>
-
-              {/* --- LEADERBOARD CARD --- */}
-              <div className='bg-base-100 rounded-3xl p-6 border border-base-200 shadow-sm'>
-                <div className='flex items-center gap-3 mb-4'>
-                  <div className='p-2 bg-amber-500/10 rounded-lg'>
-                    <Trophy className='size-5 text-amber-500' />
+                {/* Footer Action */}
+                <div className='flex items-center justify-between pt-4 border-t border-base-content/5 mt-auto'>
+                  <div className='flex -space-x-2'>
+                    {/* Fake Avatars to suggest "People solving this" - adds social proof vibe */}
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className='size-6 rounded-full bg-base-300 border border-base-100 flex items-center justify-center text-[8px] text-base-content/50'
+                      ></div>
+                    ))}
                   </div>
-                  <h3 className='font-bold text-base-content'>Top Solvers</h3>
-                </div>
 
-                <div className='space-y-4'>
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className='flex items-center justify-between'>
-                      <div className='flex items-center gap-3'>
-                        <div className='avatar placeholder'>
-                          <div className='bg-base-200 text-base-content/70 w-8 rounded-full ring ring-base-300 ring-offset-base-100 ring-offset-1'>
-                            <span className='text-xs font-bold'>U{i}</span>
-                          </div>
-                        </div>
-                        <div className='flex flex-col'>
-                          <span className='text-sm font-bold text-base-content'>
-                            User {i}
-                          </span>
-                          <span className='text-[10px] text-base-content/50 font-medium'>
-                            {120 - i * 10} Problems
-                          </span>
-                        </div>
-                      </div>
-                      <span
-                        className={`text-xs font-bold ${
-                          i === 1 ? 'text-amber-500' : 'text-base-content/40'
-                        }`}
-                      >
-                        #{i}
-                      </span>
-                    </div>
-                  ))}
+                  <div className='flex items-center gap-2 text-primary font-medium text-sm group-hover:gap-3 transition-all'>
+                    Solve Challenge
+                    <ArrowRight className='size-4' />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

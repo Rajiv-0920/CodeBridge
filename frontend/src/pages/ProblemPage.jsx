@@ -3,27 +3,21 @@ import { useNavigate, useParams } from 'react-router'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import confetti from 'canvas-confetti'
 import { toast } from 'sonner'
+import { GripVertical, GripHorizontal } from 'lucide-react' // Added icons
 
 import { PROBLEMS } from '../data/problems'
 import { executeCode } from '../lib/piston'
 import ProblemDescription from '../components/ProblemDescription'
 import OutputPanel from '../components/OutputPanel'
 import CodeEditorPanel from '../components/CodeEditorPanel'
+import Navbar from '../components/Navbar' // Assuming you have this from previous steps
 
 /* -------------------------------------------------------------------------- */
-/* CONSTANTS                                 */
+/* CONSTANTS & UTILS                                                          */
 /* -------------------------------------------------------------------------- */
-
 const DEFAULT_PROBLEM_ID = 'two-sum'
 const DEFAULT_LANGUAGE = 'javascript'
 
-/* -------------------------------------------------------------------------- */
-/* UTILITY LOGIC                               */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Normalizes code output by trimming whitespace and standardizing array formatting.
- */
 const normalizeOutput = (output) => {
   if (!output) return ''
   return output
@@ -32,7 +26,6 @@ const normalizeOutput = (output) => {
     .map((line) =>
       line
         .trim()
-        // Normalize array formatting: [ 1, 2 ] -> [1,2]
         .replace(/\[\s+/g, '[')
         .replace(/\s+\]/g, ']')
         .replace(/\s*,\s*/g, ',')
@@ -42,146 +35,146 @@ const normalizeOutput = (output) => {
 }
 
 const triggerSuccessConfetti = () => {
-  const defaults = { spread: 250, particleCount: 80 }
-  confetti({ ...defaults, origin: { x: 0.2, y: 0.6 } })
-  confetti({ ...defaults, origin: { x: 0.8, y: 0.6 } })
+  const defaults = { spread: 250, particleCount: 80, decay: 0.94 }
+  confetti({
+    ...defaults,
+    origin: { x: 0.2, y: 0.6 },
+    colors: ['#10B981', '#34D399'],
+  })
+  confetti({
+    ...defaults,
+    origin: { x: 0.8, y: 0.6 },
+    colors: ['#10B981', '#34D399'],
+  })
 }
 
 /* -------------------------------------------------------------------------- */
-/* SUB-COMPONENTS                                 */
+/* CUSTOM RESIZE HANDLE                                                       */
 /* -------------------------------------------------------------------------- */
 const ResizeHandle = ({ direction = 'horizontal' }) => (
   <PanelResizeHandle
     className={`
-      transition-colors bg-base-300 hover:bg-primary
+      flex items-center justify-center transition-all duration-300
+      bg-base-300/50 hover:bg-primary/20
       ${
         direction === 'horizontal'
           ? 'w-2 cursor-col-resize'
           : 'h-2 cursor-row-resize'
       }
     `}
-  />
+  >
+    <div
+      className={`bg-base-content/20 rounded-full ${
+        direction === 'horizontal' ? 'h-8 w-1' : 'w-8 h-1'
+      }`}
+    />
+  </PanelResizeHandle>
 )
 
 /* -------------------------------------------------------------------------- */
-/* MAIN COMPONENT                               */
+/* MAIN COMPONENT                                                             */
 /* -------------------------------------------------------------------------- */
-
 function ProblemPage() {
-  // 1. Hooks and Routing
   const { id } = useParams()
   const navigate = useNavigate()
 
-  // 2. Derived State (Source of Truth)
   const currentProblemId = id && PROBLEMS[id] ? id : DEFAULT_PROBLEM_ID
   const currentProblem = PROBLEMS[currentProblemId]
 
-  // 3. Local State
   const [selectedLanguage, setSelectedLanguage] = useState(DEFAULT_LANGUAGE)
   const [code, setCode] = useState(currentProblem.starterCode[DEFAULT_LANGUAGE])
   const [output, setOutput] = useState(null)
   const [isRunning, setIsRunning] = useState(false)
 
-  // 4. Effects: Sync Code when Problem or Language changes
+  // Reset code when problem/language changes
   useEffect(() => {
-    const starterCode = currentProblem.starterCode[selectedLanguage]
-    setCode(starterCode)
+    setCode(currentProblem.starterCode[selectedLanguage])
     setOutput(null)
   }, [currentProblemId, selectedLanguage, currentProblem])
-
-  // 5. Handlers
-  const handleProblemChange = (newProblemId) => {
-    navigate(`/problem/${newProblemId}`)
-  }
-
-  const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value)
-    // Note: The useEffect above handles the code reset automatically
-  }
 
   const handleRunCode = async () => {
     setIsRunning(true)
     setOutput(null)
-
     try {
       const result = await executeCode(selectedLanguage, code)
       setOutput(result)
 
       if (result.success) {
-        // 2. Safety Check: Ensure expected output exists for this language
         const expectedRaw = currentProblem.expectedOutput?.[selectedLanguage]
-
         if (!expectedRaw) {
-          toast.error(`No expected output defined for ${selectedLanguage}`)
+          toast.warning(`No test cases defined for ${selectedLanguage}`)
           return
         }
-
-        const actualNorm = normalizeOutput(result.output)
-        const expectedNorm = normalizeOutput(expectedRaw)
-
-        // 3. Comparison Logic
-        const passed = actualNorm === expectedNorm
+        const passed =
+          normalizeOutput(result.output) === normalizeOutput(expectedRaw)
 
         if (passed) {
           triggerSuccessConfetti()
-          toast.success('All tests passed! Great job!')
+          toast.success('Accepted! Logic is correct.')
         } else {
-          // Optional: specific hint if length matches but content doesn't
-          toast.error('Tests failed. Check your output!')
+          toast.error('Wrong Answer. Check your logic.')
         }
       } else {
-        // Compilation/Runtime Error
-        toast.error(result.error || 'Code execution failed!')
+        toast.error('Runtime Error')
       }
     } catch (error) {
-      console.error('Execution Error:', error)
-      toast.error('Something went wrong with the execution server.')
+      toast.error('Execution Server Error')
     } finally {
       setIsRunning(false)
     }
   }
 
-  // 6. Render
   return (
-    <div className='h-screen flex flex-col bg-base-100'>
-      <div className='flex-1 overflow-hidden'>
-        <PanelGroup direction='horizontal'>
-          {/* Left Panel: Problem Description */}
-          <Panel defaultSize={40} minSize={30}>
-            <ProblemDescription
-              problem={currentProblem}
-              currentProblemId={currentProblemId}
-              onProblemChange={handleProblemChange}
-              allProblems={Object.values(PROBLEMS)}
-            />
-          </Panel>
+    <div className='h-screen w-full bg-base-100 relative flex flex-col overflow-hidden'>
+      {/* BACKGROUND TEXTURE */}
+      <div className='absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none' />
 
-          <ResizeHandle direction='horizontal' />
+      {/* NAVBAR */}
+      <Navbar />
 
-          {/* Right Panel: Editor & Output */}
-          <Panel defaultSize={60} minSize={30}>
-            <PanelGroup direction='vertical'>
-              {/* Top: Code Editor */}
-              <Panel defaultSize={60} minSize={30}>
-                <CodeEditorPanel
-                  selectedLanguage={selectedLanguage}
-                  code={code}
-                  isRunning={isRunning}
-                  onLanguageChange={handleLanguageChange}
-                  onCodeChange={setCode}
-                  onRunCode={handleRunCode}
-                />
-              </Panel>
+      {/* MAIN WORKSPACE - Added padding top to account for floating navbar */}
+      <div className='flex-1 pt-24 pb-4 px-4 h-full overflow-hidden'>
+        <div className='h-full border border-base-content/10 rounded-2xl overflow-hidden shadow-2xl bg-base-100/40 backdrop-blur-sm'>
+          <PanelGroup direction='horizontal'>
+            {/* LEFT PANEL: DESCRIPTION */}
+            <Panel defaultSize={40} minSize={25} maxSize={60}>
+              <ProblemDescription
+                problem={currentProblem}
+                currentProblemId={currentProblemId}
+                onProblemChange={(pid) => navigate(`/problem/${pid}`)}
+                allProblems={Object.values(PROBLEMS)}
+              />
+            </Panel>
 
-              <ResizeHandle direction='vertical' />
+            <ResizeHandle direction='horizontal' />
 
-              {/* Bottom: Output */}
-              <Panel defaultSize={30} minSize={30}>
-                <OutputPanel output={output} />
-              </Panel>
-            </PanelGroup>
-          </Panel>
-        </PanelGroup>
+            {/* RIGHT PANEL: EDITOR + OUTPUT */}
+            <Panel defaultSize={60} minSize={30}>
+              <PanelGroup direction='vertical'>
+                {/* EDITOR */}
+                <Panel defaultSize={65} minSize={30}>
+                  <CodeEditorPanel
+                    selectedLanguage={selectedLanguage}
+                    code={code}
+                    isRunning={isRunning}
+                    onLanguageChange={(e) =>
+                      setSelectedLanguage(e.target.value)
+                    }
+                    onCodeChange={setCode}
+                    onRunCode={handleRunCode}
+                  />
+                </Panel>
+
+                <ResizeHandle direction='vertical' />
+
+                {/* OUTPUT */}
+                <Panel defaultSize={35} minSize={10}>
+                  <OutputPanel output={output} />
+                </Panel>
+              </PanelGroup>
+            </Panel>
+          </PanelGroup>
+        </div>
       </div>
     </div>
   )

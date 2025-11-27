@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import Editor from '@monaco-editor/react'
-import { Loader2Icon, PlayIcon, TypeIcon } from 'lucide-react'
+import { Loader2, Play, Settings, RefreshCw } from 'lucide-react'
 
 import { LANGUAGE_CONFIG } from '../data/problems'
+// ... (Keep all your theme imports here) ...
 import {
   atomOneLightTheme,
   ayuLightTheme,
@@ -29,27 +30,21 @@ import {
 import { useEditorTheme } from '../hooks/useEditorTheme'
 
 const EDITOR_OPTIONS = {
-  fontSize: 16,
+  fontSize: 14,
   lineNumbers: 'on',
   scrollBeyondLastLine: false,
   automaticLayout: true,
   minimap: { enabled: false },
   padding: { top: 16, bottom: 16 },
-  fontFamily:
-    '"Spline Sans Mono", "Fira Code", "Cascadia Code", Consolas, monospace',
-  fontLigatures: true,
+  fontFamily: '"JetBrains Mono", "Fira Code", monospace', // Use a nice coding font
   cursorBlinking: 'smooth',
   smoothScrolling: true,
   contextmenu: true,
   formatOnType: true,
-  formatOnPaste: true,
-  lineHeight: 1.6,
-  letterSpacing: 0.5,
   renderLineHighlight: 'all',
   scrollbar: {
-    useShadows: true,
-    verticalScrollbarSize: 10,
-    horizontalScrollbarSize: 10,
+    verticalScrollbarSize: 8,
+    horizontalScrollbarSize: 8,
   },
 }
 
@@ -62,17 +57,11 @@ function CodeEditorPanel({
   onRunCode,
 }) {
   const { editorTheme, setEditorTheme } = useEditorTheme()
-
   const languageEntries = useMemo(() => Object.entries(LANGUAGE_CONFIG), [])
   const currentLanguage = LANGUAGE_CONFIG[selectedLanguage]
 
-  const handleThemeChange = (e) => {
-    setEditorTheme(e.target.value)
-  }
-
-  // 3. Register the custom themes before the editor mounts
   const handleEditorWillMount = (monaco) => {
-    // Dark themes
+    // ... (Keep your existing theme definitions here) ...
     monaco.editor.defineTheme('monokai', monokaiTheme)
     monaco.editor.defineTheme('dracula', draculaTheme)
     monaco.editor.defineTheme('github-dark', githubDarkTheme)
@@ -83,8 +72,6 @@ function CodeEditorPanel({
     monaco.editor.defineTheme('cobalt2', cobalt2Theme)
     monaco.editor.defineTheme('material-theme', materialTheme)
     monaco.editor.defineTheme('gruvbox-dark', gruvboxDarkTheme)
-
-    // Light themes
     monaco.editor.defineTheme('github-light', githubLightTheme)
     monaco.editor.defineTheme('light-plus', lightPlusTheme)
     monaco.editor.defineTheme('solarized-light', solarizedLightTheme)
@@ -101,69 +88,81 @@ function CodeEditorPanel({
   }
 
   return (
-    <div className='h-full bg-base-200 flex flex-col'>
-      {/* Header Bar */}
-      <div className='flex items-center justify-between px-6 py-3 bg-base-100 border-b border-base-300 shadow-sm'>
-        <div className='flex items-center gap-4'>
-          {/* Language Selector */}
-          <div className='flex items-center gap-2 px-3 py-1.5 bg-base-200 rounded-lg'>
-            <img
-              src={currentLanguage.icon}
-              alt={currentLanguage.name}
-              className='size-5'
-            />
-            <select
-              className='select select-sm bg-transparent border-none focus:outline-none font-medium text-sm w-32'
-              value={selectedLanguage}
-              onChange={onLanguageChange}
-            >
-              {languageEntries.map(([key, lang]) => (
-                <option key={key} value={key}>
-                  {lang.name}
-                </option>
-              ))}
-            </select>
+    <div className='h-full flex flex-col bg-base-100'>
+      {/* TOOLBAR */}
+      <div className='flex items-center justify-between px-4 py-2 border-b border-base-content/10 bg-base-100'>
+        {/* LEFT: LANGUAGE & THEME */}
+        <div className='flex items-center gap-3'>
+          {/* Language Pill */}
+          <div className='relative group'>
+            <div className='flex items-center gap-2 px-3 py-1.5 bg-base-200/50 hover:bg-base-200 rounded-lg transition-colors cursor-pointer border border-base-content/5'>
+              <img
+                src={currentLanguage.icon}
+                alt={currentLanguage.name}
+                className='size-4'
+              />
+              <select
+                className='appearance-none bg-transparent text-xs font-medium focus:outline-none cursor-pointer w-24'
+                value={selectedLanguage}
+                onChange={onLanguageChange}
+              >
+                {languageEntries.map(([key, lang]) => (
+                  <option key={key} value={key}>
+                    {lang.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Theme Selector */}
-          <div className='flex items-center gap-2 px-3 py-1.5 bg-base-200 rounded-lg'>
-            <TypeIcon className='size-4 text-base-content/60' />
-            <select
-              className='select select-sm bg-transparent border-none focus:outline-none font-medium text-sm w-36'
-              value={editorTheme}
-              onChange={handleThemeChange}
-            >
-              {THEME_OPTIONS.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
+          {/* Theme Pill */}
+          <div className='relative group'>
+            <div className='flex items-center gap-2 px-3 py-1.5 bg-base-200/50 hover:bg-base-200 rounded-lg transition-colors cursor-pointer border border-base-content/5'>
+              <Settings className='size-3.5 text-base-content/60' />
+              <select
+                className='appearance-none bg-transparent text-xs font-medium focus:outline-none cursor-pointer w-24'
+                value={editorTheme}
+                onChange={(e) => setEditorTheme(e.target.value)}
+              >
+                {THEME_OPTIONS.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Run Button */}
-        <button
-          className='btn btn-primary btn-sm gap-2 shadow-md hover:shadow-lg transition-all duration-200'
-          disabled={isRunning}
-          onClick={onRunCode}
-        >
-          {isRunning ? (
-            <>
-              <Loader2Icon className='size-4 animate-spin' />
-              <span className='font-medium'>Running...</span>
-            </>
-          ) : (
-            <>
-              <PlayIcon className='size-4 fill-current' />
-              <span className='font-medium'>Run Code</span>
-            </>
-          )}
-        </button>
+        {/* RIGHT: RUN BUTTON */}
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={() =>
+              onCodeChange(LANGUAGE_CONFIG[selectedLanguage]?.starterCode || '')
+            }
+            className='btn btn-xs btn-ghost btn-square tooltip tooltip-left'
+            data-tip='Reset Code'
+          >
+            <RefreshCw className='size-3.5' />
+          </button>
+
+          <button
+            disabled={isRunning}
+            onClick={onRunCode}
+            className='btn btn-sm btn-primary gap-2 rounded-lg shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95'
+          >
+            {isRunning ? (
+              <Loader2 className='size-3.5 animate-spin' />
+            ) : (
+              <Play className='size-3.5 fill-current' />
+            )}
+            <span className='text-xs font-bold'>Run Code</span>
+          </button>
+        </div>
       </div>
 
-      {/* Editor Container */}
-      <div className='flex-1 overflow-hidden'>
+      {/* MONACO EDITOR AREA */}
+      <div className='flex-1 relative'>
         <Editor
           height='100%'
           language={currentLanguage.monacoLang}
@@ -171,15 +170,10 @@ function CodeEditorPanel({
           theme={editorTheme}
           onChange={onCodeChange}
           options={EDITOR_OPTIONS}
-          beforeMount={handleEditorWillMount} // <--- THIS IS KEY
+          beforeMount={handleEditorWillMount}
           loading={
-            <div className='h-full flex items-center justify-center bg-base-200'>
-              <div className='flex flex-col items-center gap-3'>
-                <Loader2Icon className='size-8 animate-spin text-primary' />
-                <span className='text-sm text-base-content/60'>
-                  Loading editor...
-                </span>
-              </div>
+            <div className='absolute inset-0 flex items-center justify-center bg-base-100'>
+              <span className='loading loading-dots loading-lg text-primary'></span>
             </div>
           }
         />
