@@ -8,9 +8,18 @@ import SessionPage from './pages/SessionPage'
 import ProblemPage from './pages/ProblemPage'
 
 function App() {
-  const { isSignedIn } = useUser()
+  const { isSignedIn, isLoaded } = useUser()
+
+  if (!isLoaded) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-base-100'>
+        <span className='loading loading-spinner loading-lg text-primary'></span>
+      </div>
+    )
+  }
+
   return (
-    <div>
+    <div className='min-h-screen bg-base-100 text-base-content transition-colors duration-300'>
       <Routes>
         <Route
           path='/'
@@ -29,7 +38,7 @@ function App() {
           element={isSignedIn ? <SessionPage /> : <Navigate to='/' replace />}
         />
       </Routes>
-      <Toaster theme='dark' />
+      <Toaster theme='dark' position='top-center' />
     </div>
   )
 }
